@@ -22,7 +22,7 @@
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and
-  discards the builder; it must never create a workout, because the user's health/fitness
-  coaching depends on workout records staying truthful.
+  discards the builder; it must never create a workout, because workout records must stay
+  truthful for anyone who relies on Health/Fitness.
 - Merge layer must stay device-agnostic: any GPX is valid input.
 - Geotagging must happen on pre-import copies; never touch a `.photoslibrary`.
