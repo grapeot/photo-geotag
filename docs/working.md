@@ -18,6 +18,12 @@
   `finishWorkout`/save and writes track points with `synchronize()`. Added `apps/README.md`
   and gitignored the generated `*.xcodeproj`. Device-only validation still required (see
   that README).
+- 2026-10-12: Fixed a watchOS runtime crash observed on a physical Apple Watch. Setting
+  `CLLocationManager.allowsBackgroundLocationUpdates = true` throws
+  `NSInternalInconsistencyException: Invalid parameter not satisfying: !stayUp ||
+  CLClientIsBackgroundable(...)`. Declaring `WKBackgroundModes = [workout-processing]` was
+  not sufficient; the flag was removed because background runtime is already provided by the
+  active `HKWorkoutSession`. Added the `WKBackgroundModes` declaration and removed the flag.
 
 ## Lessons Learned
 
@@ -26,3 +32,7 @@
   truthful for anyone who relies on Health/Fitness.
 - Merge layer must stay device-agnostic: any GPX is valid input.
 - Geotagging must happen on pre-import copies; never touch a `.photoslibrary`.
+- On watchOS, do not set `CLLocationManager.allowsBackgroundLocationUpdates`; there is no
+  iOS-style location background mode and it trips a CoreLocation assertion. Background
+  runtime comes from the active `HKWorkoutSession` (declare `WKBackgroundModes =
+  [workout-processing]`).
