@@ -19,6 +19,8 @@ jobs:
         run: |
           uv venv
           uv pip install -e '.[dev]'
+      - name: Install exiftool
+        run: sudo apt-get update && sudo apt-get install -y libimage-exiftool-perl
       - name: Lint
         run: uv run ruff check src tests
       - name: Run tests
