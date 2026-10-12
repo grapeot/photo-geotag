@@ -112,7 +112,10 @@ final class WatchRecorder: NSObject, ObservableObject {
     }
 
     private func startLocationUpdates() {
-        locationManager.allowsBackgroundLocationUpdates = true
+        // Do not set `allowsBackgroundLocationUpdates` on watchOS. Background
+        // runtime is provided by the active `HKWorkoutSession`; setting the flag
+        // trips a CoreLocation assertion (`CLClientIsBackgroundable`) because
+        // watchOS has no iOS-style location background mode.
         if locationManager.authorizationStatus == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
         }

@@ -42,6 +42,8 @@ targets:
           - zh-Hans
         WKApplication: true
         WKCompanionAppBundleIdentifier: com.example.photogeotag
+        WKBackgroundModes:
+          - workout-processing
         NSHealthShareUsageDescription: Photo Track requests workout authorization only to keep GPS recording alive in the background. It never reads or saves health data.
         NSHealthUpdateUsageDescription: Photo Track uses workout authorization solely to keep background GPS recording alive. It never saves a workout to Health.
         NSLocationWhenInUseUsageDescription: Photo Track records your location while a photo track is active.
