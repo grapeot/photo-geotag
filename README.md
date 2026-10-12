@@ -148,3 +148,14 @@ photo-geotag verify --photos /path/to/photos --mapping /path/to/mapping.jsonl
 2. **After the Outing**: Tap **Stop** on the watch. The track transfers automatically to the iPhone companion app via `WatchConnectivity`.
 3. **Exporting**: Open the iPhone app, review the recorded route on the map view, and export the session as a standard `.gpx` file via AirDrop, Files, or email to your desktop computer.
 4. **Processing**: Run `photo-geotag merge` against your staging directory of photos prior to importing them into your photo library.
+
+---
+
+## Verified on Device
+
+The capture layer has been exercised on a physical Apple Watch (Apple Watch Ultra 4):
+
+- **Background recording**: a 48-minute session recorded continuously with the app in the background and the screen off. Battery drain was about **2%** for the whole session.
+- **Health isolation**: the session produced **no** workout, calorie, or exercise-ring entry in Apple Fitness or Health.
+- **Recording continues in the background**: it stops only when you tap Stop, force-quit the app, or the system ends the session.
+- **Known limitation**: while indoors with no GPS fix, no trackpoints are recorded, so a track can contain a gap for the time spent without a fix. Outdoors, points are logged about once per second.
