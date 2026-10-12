@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+"""Thin wrapper for `photo-geotag fallback`."""
+
+import sys
+
+from photo_geotag.cli import main
+
+if __name__ == "__main__":
+    raise SystemExit(main(["fallback", *sys.argv[1:]]))
