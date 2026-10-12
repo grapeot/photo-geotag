@@ -1,0 +1,42 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.venv*/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.python-version
+
+# Local environment (keep .env.example)
+.env
+.env.*
+!.env.example
+
+# Local data and generated outputs
+/tmp/
+/out/
+/local/
+
+# Xcode
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM
+*.dSYM.zip
+.build/
+.swiftpm/
+
+# XcodeGen output (project.yml is the source of truth)
+*.xcodeproj/
+*.xcworkspace/
