@@ -138,9 +138,10 @@ Any conforming GPX from any device is valid input.
 
 A `<trk>` may contain more than one `<trkseg>`. Consecutive segments are separated by a time
 gap, and the gap is missing coverage, not a connecting leg: a consumer must match photos by
-timestamp and must not interpolate across a segment boundary. The iOS app emits a single
-multi-segment GPX when several sessions (watch recording and/or Health routes) are exported
-together, so a union of sources still presents as one track without a false connecting line.
+timestamp and must not interpolate across a segment boundary. The iOS app starts a new segment
+wherever consecutive points are more than the `merge` matching tolerance (default 300 s) apart, and
+applies this to **every** export, whether a single session or a union — so one session and a union
+of sources render the same way and still present as one track without a false connecting line.
 
 ## 5. Capture apps (contract with the CLI)
 

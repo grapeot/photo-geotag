@@ -143,9 +143,7 @@ struct SessionListView: View {
     private func exportSelected() {
         let chosen = selectedSessions
         guard !chosen.isEmpty else { return }
-        if chosen.count == 1, let only = chosen.first {
-            shareItem = ShareItem(url: only.fileURL)
-        } else if let url = store.exportMergedGPX(for: chosen) {
+        if let url = store.exportGPX(for: chosen) {
             shareItem = ShareItem(url: url)
         }
         isSelecting = false

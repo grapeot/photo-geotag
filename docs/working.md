@@ -88,6 +88,13 @@
   over the transfer metadata, and the phone list distinguishes "In progress" from "Interrupted".
   Verified: iOS tests 14 passed, watch scheme BUILD SUCCEEDED.
 
+- 2026-10-13: Made export segmentation uniform. `TrackUnion.defaultSegmentGap` is now 300 s,
+  aligned with the CLI `merge` tolerance, and every iOS export (single session, detail view, or a
+  multi-select union) is re-serialized through the segmenter rather than sharing a raw file. The
+  same point set now renders identically whichever export path is used. Documented in
+  `docs/interface.md` §4 and `docs/rfc.md` §3.2. Verified: iOS tests 15 passed, watch scheme BUILD
+  SUCCEEDED.
+
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and
