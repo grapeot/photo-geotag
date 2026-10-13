@@ -136,10 +136,17 @@ Fields:
 Standard GPX 1.1 with `<trk><trkseg><trkpt lat lon><time>`. Times are UTC ISO 8601.
 Any conforming GPX from any device is valid input.
 
+A `<trk>` may contain more than one `<trkseg>`. Consecutive segments are separated by a time
+gap, and the gap is missing coverage, not a connecting leg: a consumer must match photos by
+timestamp and must not interpolate across a segment boundary. The iOS app emits a single
+multi-segment GPX when several sessions (watch recording and/or Health routes) are exported
+together, so a union of sources still presents as one track without a false connecting line.
+
 ## 5. Capture apps (contract with the CLI)
 
 - The watch app writes a GPX file per recording session.
-- The iOS app stores sessions locally and can export a session as a `.gpx` file.
+- The iOS app stores sessions locally, imports GPS routes already recorded in Apple Health, and can
+  export one session or a union of several as a single `.gpx` file.
 - The GPX file is the only interface between the apps and the CLI. The CLI never reads app
   storage or any photo library.
 

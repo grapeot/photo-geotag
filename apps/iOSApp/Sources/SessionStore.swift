@@ -30,6 +30,9 @@ struct StoredSession: Identifiable, Hashable {
 /// Loads and stores received GPX sessions on disk.
 final class SessionStore: ObservableObject {
     @Published private(set) var sessions: [StoredSession] = []
+    /// Parsed tracks keyed by session id, cached during `reload()` so the list
+    /// and detail views do not re-parse GPX on every render.
+    private(set) var tracks: [String: GPXTrack] = [:]
 
     private let directory: URL
 
@@ -43,21 +46,23 @@ final class SessionStore: ObservableObject {
     func reload() {
         let urls = (try? FileManager.default.contentsOfDirectory(at: directory,
                                                                 includingPropertiesForKeys: nil)) ?? []
-        sessions = urls
-            .filter { $0.pathExtension.lowercased() == "gpx" }
-            .compactMap { url -> StoredSession? in
-                guard let track = GPXParser.parse(contentsOf: url) else { return nil }
-                let id = url.deletingPathExtension().lastPathComponent
-                let metadata = loadMetadata(id: id)
-                return StoredSession(id: id,
-                                     fileURL: url,
-                                     startDate: track.startDate,
-                                     duration: track.duration,
-                                     pointCount: track.points.count,
-                                     isFinal: metadata.isFinal,
-                                     source: metadata.source)
-            }
-            .sorted { ($0.startDate ?? .distantPast) > ($1.startDate ?? .distantPast) }
+        var cache: [String: GPXTrack] = [:]
+        var loaded: [StoredSession] = []
+        for url in urls where url.pathExtension.lowercased() == "gpx" {
+            guard let track = GPXParser.parse(contentsOf: url) else { continue }
+            let id = url.deletingPathExtension().lastPathComponent
+            let metadata = loadMetadata(id: id)
+            cache[id] = track
+            loaded.append(StoredSession(id: id,
+                                        fileURL: url,
+                                        startDate: track.startDate,
+                                        duration: track.duration,
+                                        pointCount: track.points.count,
+                                        isFinal: metadata.isFinal,
+                                        source: metadata.source))
+        }
+        tracks = cache
+        sessions = loaded.sorted { ($0.startDate ?? .distantPast) > ($1.startDate ?? .distantPast) }
     }
 
     /// Imports (or refreshes) a session received from the watch. Snapshots and
@@ -95,7 +100,22 @@ final class SessionStore: ObservableObject {
     }
 
     func track(for session: StoredSession) -> GPXTrack? {
-        GPXParser.parse(contentsOf: session.fileURL)
+        tracks[session.id]
+    }
+
+    /// Unions the tracks of the given sessions into one GPX file, split into
+    /// `<trkseg>` runs at large time gaps, and returns its temporary URL.
+    func exportMergedGPX(for sessions: [StoredSession]) -> URL? {
+        let selectedTracks = sessions.compactMap { tracks[$0.id] }
+        let points = TrackUnion.merge(selectedTracks)
+        guard !points.isEmpty else { return nil }
+        let document = GPXWriter.document(name: "Photo Track",
+                                          points: points,
+                                          segmentGap: TrackUnion.defaultSegmentGap)
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("merged-\(UUID().uuidString).gpx")
+        guard (try? Data(document.utf8).write(to: url)) != nil else { return nil }
+        return url
     }
 
     // MARK: - Metadata sidecars
