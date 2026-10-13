@@ -1,6 +1,20 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "30 Days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "30 Days" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "30 天" } }
+      }
+    },
+    "7 Days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "7 Days" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "7 天" } }
+      }
+    },
     "Could Not Import" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -16,6 +30,13 @@
             "value" : "无法导入"
           }
         }
+      }
+    },
+    "Done" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Done" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "完成" } }
       }
     },
     "Duration" : {
@@ -52,6 +73,13 @@
         }
       }
     },
+    "Export" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "导出" } }
+      }
+    },
     "Export GPX" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -67,6 +95,13 @@
             "value" : "导出 GPX"
           }
         }
+      }
+    },
+    "Health" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Health" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "健康" } }
       }
     },
     "Health access was not granted." : {
@@ -118,6 +153,13 @@
             "value" : "记录中"
           }
         }
+      }
+    },
+    "Merge & Export" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Merge & Export" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "合并并导出" } }
       }
     },
     "No Sessions Yet" : {
@@ -188,6 +230,13 @@
         }
       }
     },
+    "Select" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Select" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择" } }
+      }
+    },
     "Sessions" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -237,6 +286,13 @@
             "value" : "未知日期"
           }
         }
+      }
+    },
+    "Watch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Watch" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "手表" } }
       }
     }
   },

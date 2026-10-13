@@ -62,6 +62,15 @@
   and §5.2; `FR-I6` added to `docs/prd.md`. Verified: iOS tests 9 passed, watch scheme BUILD
   SUCCEEDED.
 
+- 2026-10-13: Added the unified review list and union export on iOS. The list filters by the last
+  7/30 days, shows a schematic route thumbnail and a source badge (Watch/Health), and supports
+  multi-select: one selection exports that session, several union into one GPX. `TrackUnion` merges
+  tracks (concat + time sort) and `GPXWriter.document(name:points:segmentGap:)` splits output into
+  `<trkseg>` runs at 30-minute gaps so a union is not drawn as one long connecting line;
+  `SessionStore` caches parsed tracks and builds the merged file. Documented the multi-segment
+  contract in `docs/interface.md` §4-§5 and added a capture-source acceptance criterion to the
+  skill. Verified: iOS tests 13 passed, watch scheme BUILD SUCCEEDED.
+
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and

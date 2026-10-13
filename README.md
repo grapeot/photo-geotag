@@ -145,9 +145,10 @@ photo-geotag verify --photos /path/to/photos --mapping /path/to/mapping.jsonl
 ## Where the Apps Fit
 
 1. **On the Outing**: Open the watch app on Apple Watch and tap **Start**. The app records coordinates in the background using an `HKWorkoutSession` that is discarded upon completion, leaving Apple Fitness and Health completely untouched.
-2. **After the Outing**: Tap **Stop** on the watch. The track transfers automatically to the iPhone companion app via `WatchConnectivity`.
-3. **Exporting**: Open the iPhone app, review the recorded route on the map view, and export the session as a standard `.gpx` file via AirDrop, Files, or email to your desktop computer.
-4. **Processing**: Run `photo-geotag merge` against your staging directory of photos prior to importing them into your photo library.
+2. **After the Outing**: Tap **Stop** on the watch. The track transfers automatically to the iPhone companion app via `WatchConnectivity`. While recording, a snapshot is pushed every five minutes so the phone shows the route building.
+3. **Using Apple Health Routes**: If you recorded the outing as a workout in the system Workout app (or a fitness app), or another workout preempted the recording, tap **Import from Health** in the iPhone app to pull those GPS routes in. Health is read for route geometry only.
+4. **Exporting**: Open the iPhone app and review the recorded routes on the list (filter by the last 7 or 30 days). Select one session and tap **Export**, or select several and tap **Merge & Export** to union them into a single multi-segment `.gpx`, then send it via AirDrop, Files, or email to your desktop computer.
+5. **Processing**: Run `photo-geotag merge` against your staging directory of photos prior to importing them into your photo library.
 
 ---
 

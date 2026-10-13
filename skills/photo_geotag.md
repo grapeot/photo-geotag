@@ -21,6 +21,10 @@ An agent task involving `photo-geotag` is considered complete only when all appl
 5. **Read-Back Verification (`verify`)**:
    - `photo-geotag verify` reads back the EXIF metadata directly from the modified image files and asserts that coordinates match the expected GPX or mapping ground truth within ±0.0001°.
    - Verification output reports zero unmatched or corrupted files.
+6. **Capture-Source Compatibility**: A GPX exported by the iOS app — from a watch session, from a
+   Health workout route, or from a union of several sessions — is a standard GPX that `merge` and
+   `verify` accept directly. A multi-`<trkseg>` export is matched by timestamp, with no
+   interpolation across segment gaps.
 
 ---
 
@@ -30,7 +34,7 @@ An agent task involving `photo-geotag` is considered complete only when all appl
 - **CLI Binary**: `photo-geotag` executable inside the active Python virtual environment (`.venv`).
 - **External Dependency**: `exiftool` on system `$PATH`.
 - **Source Code**: Python package under `src/photo_geotag/`, entrypoints under `scripts/`.
-- **Companion Apps**: Xcode project for watchOS and iOS companion apps.
+- **Companion Apps**: Xcode project for watchOS and iOS companion apps. The iOS app can import GPS routes already recorded in Apple Health (read-only) and export a single GPX for a selection of sessions.
 
 ### Hard Boundaries (Non-Negotiable)
 - **NEVER touch photo library bundles**: Do not read, write, or scan inside `.photoslibrary` directories. Geotagging must always occur on pre-import files in standard folders.
