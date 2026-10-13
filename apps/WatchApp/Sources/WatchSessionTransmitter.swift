@@ -28,12 +28,19 @@ final class WatchSessionTransmitter: NSObject, WCSessionDelegate {
         session.activate()
     }
 
-    func transfer(fileURL: URL, sessionID: String, startDate: Date?, duration: TimeInterval) {
+    func transfer(fileURL: URL,
+                   sessionID: String,
+                   startDate: Date?,
+                   duration: TimeInterval,
+                   sequence: Int = 0,
+                   isFinal: Bool = true) {
         guard WCSession.isSupported() else { return }
 
         var metadata: [String: Any] = [
             WatchTransferKey.sessionID: sessionID,
-            WatchTransferKey.duration: duration
+            WatchTransferKey.duration: duration,
+            WatchTransferKey.sequence: sequence,
+            WatchTransferKey.isFinal: isFinal
         ]
         if let startDate {
             metadata[WatchTransferKey.startDate] = startDate.timeIntervalSince1970

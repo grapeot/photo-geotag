@@ -46,6 +46,11 @@ final class WatchRecorder: NSObject, ObservableObject {
     private var sessionStartDate: Date?
     private var activeSessionID: String?
 
+    private var snapshotTimer: Timer?
+    private var snapshotSequence = 0
+    /// How often an in-progress track is pushed to the iPhone while recording.
+    private let snapshotInterval: TimeInterval = 300
+
     private let partialFileName = "current_session.gpx.part"
     private let sessionsDirectoryName = "Sessions"
 
@@ -119,15 +124,18 @@ final class WatchRecorder: NSObject, ObservableObject {
         sessionStartDate = Date()
         activeSessionID = UUID().uuidString
         pointCount = 0
+        snapshotSequence = 0
         openPartialFile()
         startLocationUpdates()
         startWorkoutSession()
         state = .recording
+        startSnapshotTimer()
     }
 
     private func finishRecording(reason: StopReason) {
         guard state == .recording else { return }
         state = .idle
+        stopSnapshotTimer()
         locationManager.stopUpdatingLocation()
 
         let end = Date()
@@ -204,6 +212,49 @@ final class WatchRecorder: NSObject, ObservableObject {
         DispatchQueue.main.async { [weak self] in
             self?.pointCount += 1
         }
+    }
+
+    // MARK: - Incremental snapshots
+
+    private func startSnapshotTimer() {
+        stopSnapshotTimer()
+        let timer = Timer(timeInterval: snapshotInterval, repeats: true) { [weak self] _ in
+            self?.sendSnapshot()
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        snapshotTimer = timer
+    }
+
+    private func stopSnapshotTimer() {
+        snapshotTimer?.invalidate()
+        snapshotTimer = nil
+    }
+
+    /// Sends a finalized copy of the in-progress track so the iPhone can show a
+    /// growing route and keep partial data if the watch dies mid-session.
+    ///
+    /// The snapshot is re-serialized as a complete GPX document (rather than a
+    /// raw copy of the still-open `.part`) so the phone can parse it. Each
+    /// snapshot reuses the session id; the phone keeps the latest.
+    private func sendSnapshot() {
+        guard state == .recording, let url = partialFileURL else { return }
+        guard let data = try? Data(contentsOf: url),
+              let track = GPXRecovery.rescuedTrack(fromPartial: data),
+              let sessionID = activeSessionID else { return }
+
+        snapshotSequence += 1
+        let document = GPXWriter.document(name: "Photo Track", points: track.points)
+        let snapshotURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("snapshot-\(sessionID)-\(snapshotSequence).gpx")
+        guard (try? Data(document.utf8).write(to: snapshotURL)) != nil else { return }
+
+        let duration = sessionStartDate.map { Date().timeIntervalSince($0) } ?? 0
+        WatchSessionTransmitter.shared.transfer(fileURL: snapshotURL,
+                                                sessionID: sessionID,
+                                                startDate: sessionStartDate,
+                                                duration: duration,
+                                                sequence: snapshotSequence,
+                                                isFinal: false)
     }
 
     private func finalizeAndTransfer(endingAt end: Date, status: String) {

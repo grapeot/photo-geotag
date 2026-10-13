@@ -66,6 +66,7 @@ The watch app is an embedded target hosted within the iOS companion application.
   - When the user taps **Stop**, the app ends the session with `healthStore.end(session)` and discards the associated live builder (`builder.discardWorkout()`), or simply never calls `builder.finishWorkout(...)`, so no `HKWorkout` is created.
   - **Critical Guarantee**: By ending the session without finalizing and saving a workout, zero workout records, zero heart rate readings, and zero calorie logs are registered in Apple Health or Fitness.
 - **Data Persistence**: Track points are written incrementally as serialized XML snippets. If the watch runs out of battery mid-session, all points up to the last flush are preserved.
+- **Incremental Snapshots**: Every five minutes while recording, the recorder re-serializes the in-progress track into a complete GPX document and transfers it to the iPhone with `final = false`. The snapshots share one session id, so the phone keeps the latest. This gives the user a progressively built route to eyeball for plausibility, and preserves partial data if the watch dies before Stop. The finalized track is sent once more with `final = true`. Snapshots are cumulative (each carries the whole track so far); a delta encoding is a deliberate non-goal for now.
 - **User Interface**: Minimalist single-button interface (Start/Stop). Automatically adheres to system light/dark mode and delivers localized strings in English and Chinese.
 
 ### 3.2 iPhone App (`iOS`)
@@ -73,7 +74,7 @@ The watch app is an embedded target hosted within the iOS companion application.
 The iOS app acts as the receiver and conduit for the watch app.
 
 - **Transfer Protocol**: Uses `WCSession` (`WatchConnectivity` framework) using `transferFile(_:metadata:)` or `sendMessage(_:replyHandler:)` to ensure reliable background delivery even if the iPhone is locked when the session ends.
-- **Session Management**: Parses the received file, stores it in the app's local sandbox, and renders an interactive `MapKit` trace of the route.
+- **Session Management**: Parses the received file, stores it in the app's local sandbox, and renders an interactive `MapKit` trace of the route. A session received with `final = false` is shown as in progress and is replaced in place when the finalized track arrives. Per-session metadata (final state, source) is kept in a `.meta.json` sidecar next to each `.gpx`.
 - **Export Pipeline**: Exposes standard iOS export interfaces:
   - `UIActivityViewController` (Share Sheet) for direct AirDrop to a Mac.
   - Direct export to the iOS Files app or cloud drives.
