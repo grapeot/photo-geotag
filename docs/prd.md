@@ -80,6 +80,7 @@ The project consists of four decoupled components:
 - **FR-I3 (Map Preview)**: Render the recorded track path on an interactive map view.
 - **FR-I4 (GPX Export)**: Enable exporting recorded tracks as standard `.gpx` files through the iOS share sheet, AirDrop, or the Files application.
 - **FR-I5 (Localization & Appearance)**: Bilingual support (English and Chinese) and light/dark appearance matching system settings.
+- **FR-I6 (Health Route Import)**: Read GPS routes already recorded in Apple Health (workout routes) and import them as sessions, so a track captured as a workout is available alongside watch recordings. Reading is limited to route geometry; no health metric is read or written.
 
 #### 3.2.3 CLI (`photo-geotag`)
 

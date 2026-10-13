@@ -25,6 +25,8 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Photo Geotag reads workout routes to import GPS tracks you already recorded. It never writes health data and never reads heart rate, calories, or other health metrics.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

@@ -3,6 +3,10 @@ import SwiftUI
 struct SessionListView: View {
     @EnvironmentObject private var store: SessionStore
 
+    @State private var healthImporter = HealthRouteImporter()
+    @State private var isImporting = false
+    @State private var importError: String?
+
     var body: some View {
         NavigationStack {
             Group {
@@ -28,6 +32,48 @@ struct SessionListView: View {
             .navigationTitle("Sessions")
             .navigationDestination(for: StoredSession.self) { session in
                 SessionDetailView(session: session)
+            }
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        importFromHealth()
+                    } label: {
+                        if isImporting {
+                            ProgressView()
+                        } else {
+                            Label("Import from Health", systemImage: "heart.text.square")
+                        }
+                    }
+                    .disabled(isImporting)
+                }
+            }
+            .alert("Could Not Import", isPresented: isShowingImportError) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(importError ?? "")
+            }
+        }
+    }
+
+    private var isShowingImportError: Binding<Bool> {
+        Binding(get: { importError != nil },
+                set: { if !$0 { importError = nil } })
+    }
+
+    private func importFromHealth() {
+        guard !isImporting else { return }
+        isImporting = true
+        importError = nil
+        healthImporter.requestAuthorization { granted in
+            guard granted else {
+                importError = String(localized: "Health access was not granted.")
+                isImporting = false
+                return
+            }
+            let since = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+            healthImporter.importRoutes(since: since) { routes in
+                store.importHealthRoutes(routes)
+                isImporting = false
             }
         }
     }

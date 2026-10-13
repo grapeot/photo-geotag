@@ -20,6 +20,7 @@ graph TD
         W[watchOS Target] -->|HKWorkoutSession (discarded)| GPS[CoreLocation Engine]
         GPS -->|Incremental append| WS[Watch Local Storage]
         WS -->|WatchConnectivity| IP[iOS Companion Host]
+        HR[Workout Routes in Health] -->|HKWorkoutRoute| IP
         IP -->|UI Map View| MV[Map Visualization]
         IP -->|Share Sheet / AirDrop / Files| GPX[Standard GPX File]
     end
@@ -40,7 +41,7 @@ graph TD
 
     classDef capture fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
     classDef merge fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
-    class W,GPS,WS,IP,MV,GPX capture;
+    class W,GPS,WS,IP,MV,GPX,HR capture;
     class CLI,EXT_GPX,ANC,PHOTOS,ET,JL,MAP,CHK,TAGGED merge;
 ```
 
@@ -78,6 +79,7 @@ The iOS app acts as the receiver and conduit for the watch app.
 - **Export Pipeline**: Exposes standard iOS export interfaces:
   - `UIActivityViewController` (Share Sheet) for direct AirDrop to a Mac.
   - Direct export to the iOS Files app or cloud drives.
+- **Health Route Import**: Reads workout routes the user already recorded in Apple Health (the system Workout app or another fitness app) and turns each into a GPX session, so a track is not lost when it was captured as a workout rather than by the watch app. This is the complement to §4.5: the watch recorder and the user's own workouts are alternative sources for the same outing. The importer reads **route geometry only** — it requests read access to workouts and routes, and never reads heart rate, active energy, or any other metric, and never writes to Health.
 - **Appearance & Localization**: Full English and Chinese localization matching system preferences; responsive to light and dark system appearances.
 
 ### 3.3 CLI (`src/photo_geotag/`)
@@ -186,5 +188,6 @@ that app into Health, and the iOS app can read it back (see §3.2) rather than t
    - `photo-geotag` strictly rejects paths resolving inside `.photoslibrary` directory packages. Direct writes to internal library bundles corrupt the underlying SQLite catalog and desynchronize system thumbnails. Geotagging must precede library import.
 2. **No Health or Fitness Metrics**:
    - The project does not calculate heart rate, active calories, distance traveled, or split times.
+   - Reading workout *route geometry* from Health (§3.2) is permitted: latitude/longitude/time are location data, not health metrics. The boundary that stands is that no health metric is read, stored, or surfaced anywhere, and nothing is ever written to Health.
 3. **No Centralized Cloud Infrastructure**:
    - The toolkit operates 100% offline. There is no user authentication, telemetry, or remote server dependency.

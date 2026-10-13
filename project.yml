@@ -60,6 +60,7 @@ targets:
       - path: apps/iOSApp
         excludes:
           - "Info.plist"
+          - "*.entitlements"
       - path: apps/Shared
     settings:
       base:
@@ -81,6 +82,11 @@ targets:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+        NSHealthShareUsageDescription: Photo Geotag reads workout routes to import GPS tracks you already recorded. It never writes health data and never reads heart rate, calories, or other health metrics.
+    entitlements:
+      path: apps/iOSApp/PhotoGeotag.entitlements
+      properties:
+        com.apple.developer.healthkit: true
     dependencies:
       - target: PhotoGeotagWatch
         embed: true
