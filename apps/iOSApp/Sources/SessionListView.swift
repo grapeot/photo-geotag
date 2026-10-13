@@ -38,12 +38,21 @@ struct SessionRowView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            if let start = session.startDate {
-                Text(start.formatted(date: .abbreviated, time: .shortened))
-                    .font(.headline)
-            } else {
-                Text("Unknown Date")
-                    .font(.headline)
+            HStack(spacing: 6) {
+                if let start = session.startDate {
+                    Text(start.formatted(date: .abbreviated, time: .shortened))
+                        .font(.headline)
+                } else {
+                    Text("Unknown Date")
+                        .font(.headline)
+                }
+                if !session.isFinal {
+                    Text("In progress")
+                        .font(.caption2)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(.tint.opacity(0.15), in: Capsule())
+                }
             }
 
             HStack(spacing: 12) {

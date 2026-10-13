@@ -46,6 +46,14 @@
   recovery in `docs/rfc.md` §4.5. Verified: iOS tests 6 passed, watch scheme BUILD SUCCEEDED,
   CLI `pytest` 53 passed.
 
+- 2026-10-13: Added incremental snapshot transfer. While recording, the watch re-serializes the
+  in-progress track into a complete GPX every five minutes and transfers it with
+  `{sequence, isFinal:false}`; the finalized track is sent with `isFinal:true`. Snapshots share one
+  session id, so the iPhone overwrites in place and shows the route growing. `StoredSession` gained
+  `isFinal` and `source`, persisted in a `.meta.json` sidecar; non-final sessions show an "In
+  progress" badge. `WatchTransferKey` and a `watchTransferBool` decoder were added to Shared.
+  Verified: iOS tests 9 passed, watch scheme BUILD SUCCEEDED.
+
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and

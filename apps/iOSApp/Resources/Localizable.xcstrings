@@ -52,6 +52,23 @@
         }
       }
     },
+    "In progress" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In progress"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记录中"
+          }
+        }
+      }
+    },
     "No Sessions Yet" : {
       "extractionState" : "manual",
       "localizations" : {
