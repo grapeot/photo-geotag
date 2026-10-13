@@ -12,6 +12,9 @@ enum SessionSource: String, Codable {
 private struct SessionMetadata: Codable {
     var isFinal: Bool
     var source: SessionSource
+    /// Present only while the watch reports the outing as interrupted by
+    /// another workout. Optional so older sidecars still decode.
+    var isInterrupted: Bool?
 }
 
 /// A track session persisted in the app's Documents directory.
@@ -24,6 +27,9 @@ struct StoredSession: Identifiable, Hashable {
     /// `false` while the watch is still recording and only snapshots have
     /// arrived; `true` once the finalized track is received.
     let isFinal: Bool
+    /// `true` when the watch lost its session to another workout and the outing
+    /// is open, waiting to be resumed or discarded.
+    let isInterrupted: Bool
     let source: SessionSource
 }
 
@@ -59,6 +65,7 @@ final class SessionStore: ObservableObject {
                                         duration: track.duration,
                                         pointCount: track.points.count,
                                         isFinal: metadata.isFinal,
+                                        isInterrupted: metadata.isInterrupted ?? false,
                                         source: metadata.source))
         }
         tracks = cache
@@ -68,7 +75,11 @@ final class SessionStore: ObservableObject {
     /// Imports (or refreshes) a session received from the watch. Snapshots and
     /// the final track share a session id, so a later transfer overwrites an
     /// earlier one.
-    func importFile(from temporaryURL: URL, sessionID: String, isFinal: Bool, source: SessionSource = .watch) {
+    func importFile(from temporaryURL: URL,
+                    sessionID: String,
+                    isFinal: Bool,
+                    isInterrupted: Bool = false,
+                    source: SessionSource = .watch) {
         let destination = directory.appendingPathComponent("\(sessionID).gpx")
         try? FileManager.default.removeItem(at: destination)
         do {
@@ -76,7 +87,10 @@ final class SessionStore: ObservableObject {
         } catch {
             return
         }
-        saveMetadata(SessionMetadata(isFinal: isFinal, source: source), id: sessionID)
+        saveMetadata(SessionMetadata(isFinal: isFinal,
+                                     source: source,
+                                     isInterrupted: isInterrupted ? true : nil),
+                     id: sessionID)
         reload()
     }
 
@@ -94,7 +108,7 @@ final class SessionStore: ObservableObject {
             let destination = directory.appendingPathComponent("\(route.id).gpx")
             let document = GPXWriter.document(name: route.track.name, points: route.track.points)
             guard (try? Data(document.utf8).write(to: destination)) != nil else { continue }
-            saveMetadata(SessionMetadata(isFinal: true, source: .health), id: route.id)
+            saveMetadata(SessionMetadata(isFinal: true, source: .health, isInterrupted: nil), id: route.id)
         }
         reload()
     }

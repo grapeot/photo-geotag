@@ -30,6 +30,8 @@ final class WatchReceiver: NSObject, ObservableObject, WCSessionDelegate {
     func session(_ session: WCSession, didReceive file: WCSessionFile) {
         let sessionID = (file.metadata?[WatchTransferKey.sessionID] as? String) ?? UUID().uuidString
         let isFinal = watchTransferBool(file.metadata?[WatchTransferKey.isFinal], default: true)
+        let state = file.metadata?[WatchTransferKey.state] as? String
+        let isInterrupted = state == WatchTransferState.interrupted
         let temporaryURL = FileManager.default.temporaryDirectory
             .appendingPathComponent("\(sessionID)-\(UUID().uuidString).gpx")
         do {
@@ -39,7 +41,10 @@ final class WatchReceiver: NSObject, ObservableObject, WCSessionDelegate {
         }
         let store = self.store
         DispatchQueue.main.async {
-            store?.importFile(from: temporaryURL, sessionID: sessionID, isFinal: isFinal)
+            store?.importFile(from: temporaryURL,
+                              sessionID: sessionID,
+                              isFinal: isFinal,
+                              isInterrupted: isInterrupted)
         }
     }
 }

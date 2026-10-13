@@ -6,6 +6,10 @@ struct SessionDetailView: View {
 
     @EnvironmentObject private var store: SessionStore
     @State private var shareItem: ShareItem?
+    @State private var launcher = WatchWorkoutLauncher()
+    @State private var resumeMessage: String?
+
+    private var canResumeOnWatch: Bool { !session.isFinal && session.isInterrupted }
 
     private var coordinates: [CLLocationCoordinate2D] {
         (store.track(for: session)?.points ?? []).map {
@@ -41,14 +45,33 @@ struct SessionDetailView: View {
                     Label("Export GPX", systemImage: "square.and.arrow.up")
                 }
             }
+            if canResumeOnWatch {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        launcher.resumeOnWatch { success in
+                            resumeMessage = success ? "Resume Requested" : "Could Not Reach Watch"
+                        }
+                    } label: {
+                        Label("Resume on Apple Watch", systemImage: "arrow.clockwise")
+                    }
+                }
+            }
         }
         .sheet(item: $shareItem) { item in
             ShareSheet(activityItems: [item.url])
+        }
+        .alert(LocalizedStringKey(resumeMessage ?? ""), isPresented: isShowingResumeMessage) {
+            Button("OK", role: .cancel) {}
         }
     }
 
     private var title: String {
         session.startDate?.formatted(date: .abbreviated, time: .shortened) ?? String(localized: "Unknown Date")
+    }
+
+    private var isShowingResumeMessage: Binding<Bool> {
+        Binding(get: { resumeMessage != nil },
+                set: { if !$0 { resumeMessage = nil } })
     }
 
     private var summary: some View {

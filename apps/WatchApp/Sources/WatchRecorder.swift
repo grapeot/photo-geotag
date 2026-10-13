@@ -21,6 +21,8 @@ import WatchKit
 /// discard finalizes it.
 final class WatchRecorder: NSObject, ObservableObject {
 
+    static let shared = WatchRecorder()
+
     enum State: Equatable {
         case idle
         case recording
@@ -130,6 +132,23 @@ final class WatchRecorder: NSObject, ObservableObject {
             return
         }
         recoverOrphanedRecordingIfNeeded()
+    }
+
+    /// Called when the iPhone asks the watch to resume (via
+    /// `HKHealthStore.startWatchApp`). Resumes an interrupted outing, or starts
+    /// a fresh one if nothing is open.
+    func resumeFromPhone() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            switch self.state {
+            case .interrupted:
+                self.resume()
+            case .idle:
+                self.start()
+            case .recording:
+                break
+            }
+        }
     }
 
     // MARK: - Session lifecycle
