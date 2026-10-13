@@ -112,6 +112,14 @@
   lint error in `gpx.py` that had failed CI. Verified: `ruff check` clean, CLI `pytest` 55 passed,
   iOS tests 15 passed, watch scheme BUILD SUCCEEDED.
 
+- 2026-10-13: Made signing and app identity configurable without committing private values. Identity
+  and signing come from `apps/Signing.xcconfig` (public placeholder) which optionally includes a
+  gitignored `apps/Signing.local.xcconfig`; `project.yml` wires it via `configFiles` and derives the
+  iOS bundle id, watch bundle id, watch companion id, and test bundle id from `$(PHOTOGEOTAG_APP_ID)`.
+  Added `Signing.local.xcconfig.sample` and documented the setup in `apps/README.md`. This also fixes
+  the generated project dropping a manually-set team in Xcode. Verified: device builds and installs
+  on a physical iPhone + Apple Watch with a real bundle id.
+
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and

@@ -1,0 +1,4 @@
+// Sample local signing config. Copy to `Signing.local.xcconfig` (gitignored) and
+// fill in your real values. `Signing.xcconfig` includes it when present.
+DEVELOPMENT_TEAM = YOUR_TEAM_ID
+PHOTOGEOTAG_APP_ID = com.example.photogeotag

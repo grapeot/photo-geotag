@@ -14,7 +14,13 @@ settings:
     SWIFT_VERSION: "5.0"
     MARKETING_VERSION: "1.0"
     CURRENT_PROJECT_VERSION: "1"
-    CODE_SIGN_STYLE: Automatic
+
+# Signing style, team, and app identity come from an xcconfig so a gitignored
+# local file can supply the real team id and bundle id without committing them.
+# See apps/Signing.xcconfig and apps/Signing.local.xcconfig.sample.
+configFiles:
+  Debug: apps/Signing.xcconfig
+  Release: apps/Signing.xcconfig
 
 targets:
   PhotoGeotagWatch:
@@ -29,7 +35,7 @@ targets:
     settings:
       base:
         PRODUCT_NAME: PhotoGeotagWatch
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.photogeotag.watchkitapp
+        PRODUCT_BUNDLE_IDENTIFIER: $(PHOTOGEOTAG_APP_ID).watchkitapp
         GENERATE_INFOPLIST_FILE: NO
     info:
       path: apps/WatchApp/Info.plist
@@ -41,7 +47,7 @@ targets:
           - en
           - zh-Hans
         WKApplication: true
-        WKCompanionAppBundleIdentifier: com.example.photogeotag
+        WKCompanionAppBundleIdentifier: $(PHOTOGEOTAG_APP_ID)
         WKBackgroundModes:
           - workout-processing
         NSHealthShareUsageDescription: Photo Track requests workout authorization only to keep GPS recording alive in the background. It never reads or saves health data.
@@ -65,7 +71,7 @@ targets:
     settings:
       base:
         PRODUCT_NAME: PhotoGeotag
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.photogeotag
+        PRODUCT_BUNDLE_IDENTIFIER: $(PHOTOGEOTAG_APP_ID)
         GENERATE_INFOPLIST_FILE: NO
         TARGETED_DEVICE_FAMILY: "1,2"
     info:
@@ -102,7 +108,7 @@ targets:
       - path: apps/Shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.photogeotag.tests
+        PRODUCT_BUNDLE_IDENTIFIER: $(PHOTOGEOTAG_APP_ID).tests
         GENERATE_INFOPLIST_FILE: YES
 
 schemes:

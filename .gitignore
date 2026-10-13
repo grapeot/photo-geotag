@@ -40,3 +40,6 @@ xcuserdata/
 # XcodeGen output (project.yml is the source of truth)
 *.xcodeproj/
 *.xcworkspace/
+
+# Local signing identity / bundle id (never commit)
+apps/Signing.local.xcconfig
