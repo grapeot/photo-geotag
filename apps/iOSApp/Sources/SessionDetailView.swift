@@ -11,23 +11,30 @@ struct SessionDetailView: View {
 
     private var canResumeOnWatch: Bool { !session.isFinal && session.isInterrupted }
 
-    private var coordinates: [CLLocationCoordinate2D] {
-        (store.track(for: session)?.points ?? []).map {
-            CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+    private var segments: [[CLLocationCoordinate2D]] {
+        let points = store.track(for: session)?.points ?? []
+        return GPXWriter.segments(from: points, maxGap: TrackUnion.defaultSegmentGap).map { segment in
+            segment.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
         }
+    }
+
+    private var allCoordinates: [CLLocationCoordinate2D] {
+        segments.flatMap { $0 }
     }
 
     var body: some View {
         VStack(spacing: 0) {
             Map {
-                if coordinates.count > 1 {
-                    MapPolyline(coordinates: coordinates)
-                        .stroke(.blue, lineWidth: 4)
+                ForEach(Array(segments.enumerated()), id: \.offset) { _, segment in
+                    if segment.count > 1 {
+                        MapPolyline(coordinates: segment)
+                            .stroke(.blue, lineWidth: 4)
+                    }
                 }
-                if let first = coordinates.first {
+                if let first = allCoordinates.first {
                     Marker("Start", coordinate: first)
                 }
-                if let last = coordinates.last {
+                if let last = allCoordinates.last {
                     Marker("End", coordinate: last)
                 }
             }

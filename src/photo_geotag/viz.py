@@ -95,15 +95,18 @@ def render_gpx(
     html_path: str | Path | None = None,
 ) -> Path:
     track_path = assert_safe_path(gpx_path)
-    points = gpx_module.parse_gpx(track_path)
-    if not points:
+    segments = gpx_module.parse_gpx_segments(track_path)
+    total = sum(len(segment) for segment in segments)
+    if total == 0:
         raise UsageError(f"no trackpoints found in {track_path}")
 
+    # Draw each <trkseg> as its own line so a pause or gap is not bridged.
+    tracks = [[(p.lat, p.lon) for p in segment] for segment in segments]
     png = assert_safe_path(out_png)
-    _plot([[ (p.lat, p.lon) for p in points ]], [], [], png, "GPX track")
+    _plot(tracks, [], [], png, "GPX track")
     if html_path is not None:
         _write_html(
-            assert_safe_path(html_path), png, "GPX track", f"{len(points)} trackpoints"
+            assert_safe_path(html_path), png, "GPX track", f"{total} trackpoints"
         )
     return png
 

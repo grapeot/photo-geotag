@@ -26,32 +26,69 @@ def _parse_iso_utc(text: str) -> datetime:
     return dt.astimezone(UTC)
 
 
+def _point_from_element(el: ET.Element) -> "TrackPoint | None":
+    lat = el.get("lat")
+    lon = el.get("lon")
+    if lat is None or lon is None:
+        return None
+    t: datetime | None = None
+    ele: float | None = None
+    for child in el:
+        tag = child.tag.split("}")[-1]
+        if tag == "time" and child.text:
+            t = _parse_iso_utc(child.text)
+        elif tag == "ele" and child.text:
+            try:
+                ele = float(child.text.strip())
+            except ValueError:
+                ele = None
+    if t is None:
+        return None
+    return TrackPoint(t, float(lat), float(lon), ele)
+
+
+def _local_name(el: ET.Element) -> str:
+    return el.tag.split("}")[-1]
+
+
 def parse_gpx(path: str | Path) -> list[TrackPoint]:
     """Parse all `<trkpt>` elements into a time-sorted list. Namespace-agnostic."""
     root = ET.parse(str(path)).getroot()
     points: list[TrackPoint] = []
     for el in root.iter():
-        if el.tag.split("}")[-1] != "trkpt":
+        if _local_name(el) != "trkpt":
             continue
-        lat = el.get("lat")
-        lon = el.get("lon")
-        if lat is None or lon is None:
-            continue
-        t: datetime | None = None
-        ele: float | None = None
-        for child in el:
-            tag = child.tag.split("}")[-1]
-            if tag == "time" and child.text:
-                t = _parse_iso_utc(child.text)
-            elif tag == "ele" and child.text:
-                try:
-                    ele = float(child.text.strip())
-                except ValueError:
-                    ele = None
-        if t is not None:
-            points.append(TrackPoint(t, float(lat), float(lon), ele))
+        point = _point_from_element(el)
+        if point is not None:
+            points.append(point)
     points.sort(key=lambda p: p.t)
     return points
+
+
+def parse_gpx_segments(path: str | Path) -> list[list[TrackPoint]]:
+    """Parse a track into its `<trkseg>` runs, each time-sorted.
+
+    A `<trkseg>` boundary marks a break in coverage (a pause or a gap between
+    recordings), so consumers that draw a line should render each run
+    separately instead of connecting across the boundary. Falls back to one
+    segment when the document has no `<trkseg>` elements.
+    """
+    root = ET.parse(str(path)).getroot()
+    segments: list[list[TrackPoint]] = []
+    for el in root.iter():
+        if _local_name(el) != "trkseg":
+            continue
+        points = [
+            p for p in (_point_from_element(child) for child in el if _local_name(child) == "trkpt")
+            if p is not None
+        ]
+        points.sort(key=lambda p: p.t)
+        if points:
+            segments.append(points)
+    if not segments:
+        flat = parse_gpx(path)
+        return [flat] if flat else []
+    return segments
 
 
 def interpolate(

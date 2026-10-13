@@ -142,6 +142,8 @@ timestamp and must not interpolate across a segment boundary. The iOS app starts
 wherever consecutive points are more than the `merge` matching tolerance (default 300 s) apart, and
 applies this to **every** export, whether a single session or a union — so one session and a union
 of sources render the same way and still present as one track without a false connecting line.
+`viz` honors this too: it draws each `<trkseg>` as a separate line, so a pause does not become a
+straight line across the map.
 
 ## 5. Capture apps (contract with the CLI)
 
