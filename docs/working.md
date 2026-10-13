@@ -30,6 +30,10 @@
   a 48-minute background recording on an Apple Watch Ultra 4 used about 2% battery with zero
   Fitness/Health entries; a track can contain gaps while indoors without a GPS fix.
 
+- 2026-10-12: Documented the capture-location decision in `docs/rfc.md` §4.4 (why recording
+  runs on the Apple Watch rather than the iPhone), with evidence for the iPhone reliability and
+  battery downsides. Noted that indoor GPS gaps are inherent to GPS, not a cost of this design.
+
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and
