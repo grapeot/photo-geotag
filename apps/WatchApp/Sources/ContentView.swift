@@ -3,6 +3,8 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject private var recorder: WatchRecorder
 
+    @State private var showResumeConfirmation = false
+
     private var isRecording: Bool { recorder.state == .recording }
     private var isInterrupted: Bool { recorder.state == .interrupted }
 
@@ -23,7 +25,9 @@ struct ContentView: View {
             .foregroundStyle(.secondary)
 
             if isInterrupted {
-                Button(action: recorder.resume) {
+                Button {
+                    showResumeConfirmation = true
+                } label: {
                     Text("Resume")
                         .frame(maxWidth: .infinity)
                 }
@@ -50,6 +54,11 @@ struct ContentView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(.green)
                 .disabled(recorder.isPreparing)
+
+                Text("Starting will end any other workout that is running.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
             }
 
             if let status = recorder.statusMessage {
@@ -61,6 +70,12 @@ struct ContentView: View {
         .padding(.horizontal)
         .onAppear {
             recorder.recoverOnLaunch()
+        }
+        .alert("Resume Anyway?", isPresented: $showResumeConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Continue") { recorder.resume() }
+        } message: {
+            Text("Another workout may be running. Resuming will end it.")
         }
         .alert("Cannot Start", isPresented: isShowingAlert) {
             Button("OK", role: .cancel) {}

@@ -1,6 +1,49 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Another workout may be running. Resuming will end it." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "Another workout may be running. Resuming will end it." }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "可能有另一个体能训练正在运行，继续将结束它。" }
+        }
+      }
+    },
+    "Cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "取消" } }
+      }
+    },
+    "Continue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Continue" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "继续" } }
+      }
+    },
+    "Resume Anyway?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Resume Anyway?" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "仍要继续？" } }
+      }
+    },
+    "Starting will end any other workout that is running." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "Starting will end any other workout that is running." }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "开始将结束任何其他正在运行的体能训练。" }
+        }
+      }
+    },
     "Another workout is already running." : {
       "extractionState" : "manual",
       "localizations" : {

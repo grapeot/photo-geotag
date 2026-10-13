@@ -103,6 +103,15 @@
   interruption refactor left some paths abandoning the builder. Verified: CLI `pytest` 55 passed,
   iOS tests 15 passed, watch scheme BUILD SUCCEEDED. Deployed to a physical iPhone and Apple Watch.
 
+- 2026-10-13: Resume now confirms before taking over. Since watchOS lets the second workout session
+  win, resuming (or starting) ends any other running workout, and HealthKit cannot detect or name
+  it, so the watch Resume and the phone "Resume on Apple Watch" both show a generic confirmation
+  ("Another workout may be running. Resuming will end it."), and the watch Start screen carries a
+  static notice. Also moved iOS GPX export from `tmp/` to a stable `Documents/Exports/` folder
+  (cleared on each export) to reduce share-sheet/LaunchServices noise, and fixed a ruff `UP037`
+  lint error in `gpx.py` that had failed CI. Verified: `ruff check` clean, CLI `pytest` 55 passed,
+  iOS tests 15 passed, watch scheme BUILD SUCCEEDED.
+
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and

@@ -41,10 +41,12 @@ final class SessionStore: ObservableObject {
     private(set) var tracks: [String: GPXTrack] = [:]
 
     private let directory: URL
+    private let exportsDirectory: URL
 
     init() {
         let base = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         directory = base.appendingPathComponent("Sessions", isDirectory: true)
+        exportsDirectory = base.appendingPathComponent("Exports", isDirectory: true)
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         reload()
     }
@@ -128,8 +130,16 @@ final class SessionStore: ObservableObject {
         let document = GPXWriter.document(name: "Photo Track",
                                           points: points,
                                           segmentGap: TrackUnion.defaultSegmentGap)
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("merged-\(UUID().uuidString).gpx")
+        // Write into a stable, non-ephemeral folder (not tmp) so the share sheet
+        // resolves it cleanly; drop earlier exports so they do not accumulate.
+        try? FileManager.default.createDirectory(at: exportsDirectory, withIntermediateDirectories: true)
+        if let existing = try? FileManager.default.contentsOfDirectory(at: exportsDirectory,
+                                                                       includingPropertiesForKeys: nil) {
+            for file in existing where file.pathExtension.lowercased() == "gpx" {
+                try? FileManager.default.removeItem(at: file)
+            }
+        }
+        let url = exportsDirectory.appendingPathComponent("merged-\(UUID().uuidString).gpx")
         guard (try? Data(document.utf8).write(to: url)) != nil else { return nil }
         return url
     }
