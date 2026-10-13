@@ -11,6 +11,15 @@ enum WatchTransferKey {
     /// `true` when this is the finalized track; `false` for an in-progress
     /// snapshot. Absent metadata is treated as final.
     static let isFinal = "isFinal"
+    /// Recording lifecycle state carried with a transfer: `recording` or
+    /// `interrupted` (the watch lost its workout session to another workout).
+    static let state = "state"
+}
+
+/// Values for `WatchTransferKey.state`.
+enum WatchTransferState {
+    static let recording = "recording"
+    static let interrupted = "interrupted"
 }
 
 /// Reads a boolean from WCSession metadata, tolerating both bridged `Bool` and

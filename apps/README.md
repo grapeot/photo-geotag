@@ -52,8 +52,11 @@ are implemented but must be verified on a physical Apple Watch + paired iPhone:
 - Real `WCSession.transferFile` delivery to the phone.
 - HealthKit authorization prompts and behavior.
 - Preemption: starting a second workout (the system Workout app or a fitness app) while recording
-  stops this app cleanly, transfers the partial track, and shows "Stopped: another workout started".
-- Recovery: terminating the app mid-session and relaunching finalizes and transfers the orphaned
-  track.
+  moves the app to an **Interrupted** state (with a haptic), where the user can Resume (same
+  session) or Discard; the partial track is preserved and pushed to the phone.
+- Refused start: tapping Start while another workout holds the session shows an alert and does not
+  begin recording.
+- Recovery: terminating the app mid-recording and relaunching finalizes and transfers the orphaned
+  track (a preemption instead stays interrupted and offers Resume).
 - Incremental snapshots: a five-minute recording appears on the phone (marked "In progress") and is
   replaced by the finalized track on Stop.

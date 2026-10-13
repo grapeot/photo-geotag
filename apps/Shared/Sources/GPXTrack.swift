@@ -57,6 +57,11 @@ enum GPXWriter {
     static let trackSegmentEnd = "    </trkseg>\n"
     static let trackEnd = "  </trk>\n</gpx>\n"
 
+    /// Closes the current `<trkseg>` and opens a new one. Written when a
+    /// recording resumes after an interruption, so the resumed run becomes a
+    /// new segment instead of a straight line across the gap.
+    static let segmentBreak = trackSegmentEnd + trackSegmentStart
+
     static func documentStart(name: String, time: Date?) -> String {
         prologue(name: name, time: time) + trackSegmentStart
     }

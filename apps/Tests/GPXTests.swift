@@ -74,4 +74,22 @@ final class GPXRecoveryTests: XCTestCase {
         let track = GPXRecovery.rescuedTrack(fromPartial: Data(document.utf8))
         XCTAssertEqual(track?.points.count, 1)
     }
+
+    func testRecoversMultiSegmentPartial() {
+        let start = Date(timeIntervalSince1970: 1_700_000_000)
+        // A resumed outing: points, a segment break, then more points, still
+        // missing the closing tags.
+        var partial = GPXWriter.documentStart(name: "Photo Track", time: start)
+        partial += GPXWriter.trackPoint(TrackPoint(latitude: 1.0, longitude: 2.0,
+                                                   elevation: nil, time: start))
+        partial += GPXWriter.segmentBreak
+        partial += GPXWriter.trackPoint(TrackPoint(latitude: 1.5, longitude: 2.5,
+                                                   elevation: nil, time: start.addingTimeInterval(3600)))
+
+        guard let track = GPXRecovery.rescuedTrack(fromPartial: Data(partial.utf8)) else {
+            return XCTFail("Expected a resumed partial to be recoverable")
+        }
+        XCTAssertEqual(track.points.count, 2)
+        XCTAssertEqual(track.duration, 3600, accuracy: 1)
+    }
 }

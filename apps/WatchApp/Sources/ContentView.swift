@@ -4,20 +4,15 @@ struct ContentView: View {
     @EnvironmentObject private var recorder: WatchRecorder
 
     private var isRecording: Bool { recorder.state == .recording }
+    private var isInterrupted: Bool { recorder.state == .interrupted }
 
     var body: some View {
         VStack(spacing: 10) {
-            Image(systemName: isRecording ? "location.fill" : "location")
+            Image(systemName: iconName)
                 .font(.title3)
-                .foregroundStyle(isRecording ? Color.red : Color.secondary)
+                .foregroundStyle(iconColor)
 
-            if isRecording {
-                Text("Recording")
-                    .font(.headline)
-            } else {
-                Text("Ready")
-                    .font(.headline)
-            }
+            Text(headline)
 
             HStack(spacing: 4) {
                 Text("Points")
@@ -27,17 +22,35 @@ struct ContentView: View {
             .font(.caption)
             .foregroundStyle(.secondary)
 
-            Button(action: toggleRecording) {
-                if isRecording {
+            if isInterrupted {
+                Button(action: recorder.resume) {
+                    Text("Resume")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.orange)
+
+                Button(action: recorder.discardInterrupted) {
+                    Text("Discard")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+            } else if isRecording {
+                Button(action: recorder.stop) {
                     Text("Stop")
                         .frame(maxWidth: .infinity)
-                } else {
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
+            } else {
+                Button(action: recorder.start) {
                     Text("Start")
                         .frame(maxWidth: .infinity)
                 }
+                .buttonStyle(.borderedProminent)
+                .tint(.green)
+                .disabled(recorder.isPreparing)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(isRecording ? .red : .green)
 
             if let status = recorder.statusMessage {
                 Text(LocalizedStringKey(status))
@@ -47,15 +60,35 @@ struct ContentView: View {
         }
         .padding(.horizontal)
         .onAppear {
-            recorder.recoverOrphanedRecordingIfNeeded()
+            recorder.recoverOnLaunch()
+        }
+        .alert("Cannot Start", isPresented: isShowingAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(LocalizedStringKey(recorder.alertMessage ?? ""))
         }
     }
 
-    private func toggleRecording() {
-        if isRecording {
-            recorder.stop()
-        } else {
-            recorder.start()
-        }
+    private var isShowingAlert: Binding<Bool> {
+        Binding(get: { recorder.alertMessage != nil },
+                set: { if !$0 { recorder.alertMessage = nil } })
+    }
+
+    private var iconName: String {
+        if isInterrupted { return "exclamationmark.triangle.fill" }
+        if isRecording { return "location.fill" }
+        return "location"
+    }
+
+    private var iconColor: Color {
+        if isInterrupted { return .orange }
+        if isRecording { return .red }
+        return .secondary
+    }
+
+    private var headline: LocalizedStringKey {
+        if isInterrupted { return "Interrupted" }
+        if isRecording { return "Recording" }
+        return "Ready"
     }
 }

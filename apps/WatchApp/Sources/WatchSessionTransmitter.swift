@@ -33,14 +33,16 @@ final class WatchSessionTransmitter: NSObject, WCSessionDelegate {
                    startDate: Date?,
                    duration: TimeInterval,
                    sequence: Int = 0,
-                   isFinal: Bool = true) {
+                   isFinal: Bool = true,
+                   state: String = WatchTransferState.recording) {
         guard WCSession.isSupported() else { return }
 
         var metadata: [String: Any] = [
             WatchTransferKey.sessionID: sessionID,
             WatchTransferKey.duration: duration,
             WatchTransferKey.sequence: sequence,
-            WatchTransferKey.isFinal: isFinal
+            WatchTransferKey.isFinal: isFinal,
+            WatchTransferKey.state: state
         ]
         if let startDate {
             metadata[WatchTransferKey.startDate] = startDate.timeIntervalSince1970
