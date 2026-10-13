@@ -95,6 +95,14 @@
   `docs/interface.md` §4 and `docs/rfc.md` §3.2. Verified: iOS tests 15 passed, watch scheme BUILD
   SUCCEEDED.
 
+- 2026-10-13: Gap-aware rendering and explicit workout discard. `viz` now parses `<trkseg>` runs
+  (`gpx.parse_gpx_segments`) and draws each as a separate line, so a paused workout no longer
+  renders as a straight line across the gap; the iOS map preview and route thumbnail break at
+  gaps too. `WatchRecorder` now calls `HKWorkoutBuilder.discardWorkout()` on every teardown path
+  (stop, preemption, failed start) so no workout/calories/heart rate can reach Health after the
+  interruption refactor left some paths abandoning the builder. Verified: CLI `pytest` 55 passed,
+  iOS tests 15 passed, watch scheme BUILD SUCCEEDED. Deployed to a physical iPhone and Apple Watch.
+
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and

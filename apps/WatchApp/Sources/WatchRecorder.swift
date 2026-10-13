@@ -190,6 +190,7 @@ final class WatchRecorder: NSObject, ObservableObject {
         pendingStart = nil
         isPreparing = false
         locationManager.stopUpdatingLocation()
+        workoutBuilder?.discardWorkout()
         workoutSession = nil
         workoutBuilder = nil
         alertMessage = "Another workout is already running."
@@ -200,13 +201,12 @@ final class WatchRecorder: NSObject, ObservableObject {
         stopSnapshotTimer()
         locationManager.stopUpdatingLocation()
 
-        let end = Date()
         if reason == .user {
             workoutSession?.end()
-            // End data collection but never call `finishWorkout`, so the builder
-            // is discarded and no workout, calories, or heart rate reaches Health.
-            workoutBuilder?.endCollection(withEnd: end) { _, _ in }
         }
+        // Explicitly discard the builder so no workout, calories, or heart rate
+        // ever reaches Health — on the stop, preemption, and failure paths alike.
+        workoutBuilder?.discardWorkout()
         workoutSession = nil
         workoutBuilder = nil
 

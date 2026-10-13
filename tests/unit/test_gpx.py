@@ -4,8 +4,41 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from photo_geotag.gpx import TrackPoint, interpolate, parse_gpx
+from photo_geotag.gpx import TrackPoint, interpolate, parse_gpx, parse_gpx_segments
 from tests.helpers import FIXTURES
+
+
+def test_parse_gpx_segments_splits_at_trkseg(tmp_path):
+    doc = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<gpx version="1.1" creator="t" xmlns="http://www.topografix.com/GPX/1/1">\n'
+        "  <trk><trkseg>\n"
+        '    <trkpt lat="10.0" lon="20.0"><time>2026-05-10T06:00:00Z</time></trkpt>\n'
+        '    <trkpt lat="10.1" lon="20.1"><time>2026-05-10T06:00:10Z</time></trkpt>\n'
+        "  </trkseg><trkseg>\n"
+        '    <trkpt lat="10.5" lon="20.5"><time>2026-05-10T06:20:00Z</time></trkpt>\n'
+        "  </trkseg></trk>\n</gpx>\n"
+    )
+    path = tmp_path / "seg.gpx"
+    path.write_text(doc, encoding="utf-8")
+    segments = parse_gpx_segments(path)
+    assert [len(s) for s in segments] == [2, 1]
+    # The flat parse still sees every point, in time order.
+    assert len(parse_gpx(path)) == 3
+
+
+def test_parse_gpx_segments_falls_back_when_no_trkseg(tmp_path):
+    doc = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<gpx version="1.1" creator="t" xmlns="http://www.topografix.com/GPX/1/1">\n'
+        "  <trk>\n"
+        '    <trkpt lat="1.0" lon="2.0"><time>2026-05-10T06:00:00Z</time></trkpt>\n'
+        "  </trk>\n</gpx>\n"
+    )
+    path = tmp_path / "flat.gpx"
+    path.write_text(doc, encoding="utf-8")
+    segments = parse_gpx_segments(path)
+    assert [len(s) for s in segments] == [1]
 
 
 def _p(hour: int, minute: int, lat: float, lon: float, ele: float) -> TrackPoint:

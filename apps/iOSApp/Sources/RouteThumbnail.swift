@@ -53,9 +53,12 @@ struct RouteThumbnail: View {
         }
 
         var path = Path()
-        path.move(to: project(points[0]))
-        for point in points.dropFirst() {
-            path.addLine(to: project(point))
+        for segment in GPXWriter.segments(from: points, maxGap: TrackUnion.defaultSegmentGap) {
+            guard let first = segment.first else { continue }
+            path.move(to: project(first))
+            for point in segment.dropFirst() {
+                path.addLine(to: project(point))
+            }
         }
         return path
     }
