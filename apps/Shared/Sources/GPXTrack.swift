@@ -110,3 +110,26 @@ enum GPXWriter {
             .replacingOccurrences(of: "'", with: "&apos;")
     }
 }
+
+/// Recovers a track from a partially written on-disk GPX file.
+///
+/// The recorder streams points into `current_session.gpx.part` and only closes
+/// the document on Stop. If the app is terminated mid-session (battery, crash,
+/// or a system preemption), the file is left without its closing tags. This
+/// helper closes the document and returns the points that were safely flushed,
+/// or `nil` when the fragment holds no usable track.
+enum GPXRecovery {
+    static func rescuedTrack(fromPartial data: Data) -> GPXTrack? {
+        guard var text = String(data: data, encoding: .utf8) else { return nil }
+        if !text.contains("</gpx>") {
+            if text.contains("<trkseg>") {
+                text += GPXWriter.documentEnd
+            } else {
+                text += "</gpx>\n"
+            }
+        }
+        guard let track = GPXParser.parse(data: Data(text.utf8)),
+              !track.points.isEmpty else { return nil }
+        return track
+    }
+}

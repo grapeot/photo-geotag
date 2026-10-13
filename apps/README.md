@@ -48,3 +48,7 @@ are implemented but must be verified on a physical Apple Watch + paired iPhone:
   (zero workouts, calories, and exercise minutes for the recording window).
 - Real `WCSession.transferFile` delivery to the phone.
 - HealthKit authorization prompts and behavior.
+- Preemption: starting a second workout (the system Workout app or a fitness app) while recording
+  stops this app cleanly, transfers the partial track, and shows "Stopped: another workout started".
+- Recovery: terminating the app mid-session and relaunching finalizes and transfers the orphaned
+  track.
