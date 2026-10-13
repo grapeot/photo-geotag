@@ -42,6 +42,33 @@ latest OS, which may not have the named device.
 Bundle identifiers are placeholders (`com.example.photogeotag[.watchkitapp]`); set your own
 before signing.
 
+## Signing and bundle identity
+
+App identity and signing come from `Signing.xcconfig`. The committed file holds only placeholders
+and optionally includes a gitignored `Signing.local.xcconfig`:
+
+```
+# apps/Signing.xcconfig (committed)
+PHOTOGEOTAG_APP_ID = com.example.photogeotag
+CODE_SIGN_STYLE = Automatic
+#include? "Signing.local.xcconfig"
+```
+
+To build for a device, copy `Signing.local.xcconfig.sample` to `Signing.local.xcconfig` (gitignored)
+and set your real values, then run `xcodegen generate`:
+
+```
+# apps/Signing.local.xcconfig (never committed)
+DEVELOPMENT_TEAM = <your team id>
+PHOTOGEOTAG_APP_ID = io.github.example.photogeotag
+```
+
+The iOS bundle id, the watch bundle id (`.watchkitapp`), and the watch's
+`WKCompanionAppBundleIdentifier` all derive from `PHOTOGEOTAG_APP_ID`, so they stay in sync, and the
+generated project carries the team so Xcode builds without setting it manually. HealthKit needs an
+explicit App ID and provisioning profile, so an active Xcode account is required to create the
+profile for a new bundle id.
+
 ## Device-only validation (cannot be done in the simulator)
 
 The watch simulator has no GPS motion, no real workout store, and no watch pairing, so these

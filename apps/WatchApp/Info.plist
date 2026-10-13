@@ -40,6 +40,6 @@
 		<string>workout-processing</string>
 	</array>
 	<key>WKCompanionAppBundleIdentifier</key>
-	<string>com.example.photogeotag</string>
+	<string>$(PHOTOGEOTAG_APP_ID)</string>
 </dict>
 </plist>

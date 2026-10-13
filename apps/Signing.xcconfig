@@ -1,0 +1,15 @@
+// Signing and app identity.
+//
+// This public repo ships no real team ID or bundle identifier. Put your real
+// values in a sibling file `Signing.local.xcconfig` (gitignored); it is included
+// below when present, so both Xcode and `xcodegen generate` pick them up without
+// editing anything tracked.
+//
+//   // apps/Signing.local.xcconfig
+//   DEVELOPMENT_TEAM = <your team id>
+//   PHOTOGEOTAG_APP_ID = io.github.example.photogeotag
+
+PHOTOGEOTAG_APP_ID = com.example.photogeotag
+CODE_SIGN_STYLE = Automatic
+
+#include? "Signing.local.xcconfig"
