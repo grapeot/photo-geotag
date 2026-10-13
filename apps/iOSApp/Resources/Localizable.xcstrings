@@ -1,6 +1,34 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Could Not Reach Watch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Could Not Reach Watch" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无法连接手表" } }
+      }
+    },
+    "Interrupted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Interrupted" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已中断" } }
+      }
+    },
+    "Resume on Apple Watch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Resume on Apple Watch" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Apple Watch 上继续" } }
+      }
+    },
+    "Resume Requested" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Resume Requested" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已请求继续" } }
+      }
+    },
     "30 Days" : {
       "extractionState" : "manual",
       "localizations" : {

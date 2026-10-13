@@ -81,6 +81,13 @@
   empty transfer; this also removes a latent path that left `.recording` set with no session.
   Verified: iOS tests 14 passed, watch scheme BUILD SUCCEEDED.
 
+- 2026-10-13: Added phone-side resume and richer status. The iPhone can resume an interrupted outing
+  by calling `HKHealthStore.startWatchApp(with:)`, which launches or wakes the watch app and hands
+  it a workout configuration (`WatchAppDelegate.handle(_:)`); the watch resumes its open outing.
+  `WatchRecorder` is a singleton so the delegate can reach it. Sessions now carry a lifecycle state
+  over the transfer metadata, and the phone list distinguishes "In progress" from "Interrupted".
+  Verified: iOS tests 14 passed, watch scheme BUILD SUCCEEDED.
+
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and

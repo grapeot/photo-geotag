@@ -188,13 +188,13 @@ struct SessionRowView: View {
                         Text("Unknown Date")
                             .font(.headline)
                     }
-                    if !session.isFinal {
-                        Text("In progress")
-                            .font(.caption2)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(.tint.opacity(0.15), in: Capsule())
-                    }
+                if !session.isFinal {
+                    Text(session.isInterrupted ? LocalizedStringKey("Interrupted") : LocalizedStringKey("In progress"))
+                        .font(.caption2)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background((session.isInterrupted ? Color.orange : Color.accentColor).opacity(0.18), in: Capsule())
+                }
                 }
 
                 HStack(spacing: 12) {

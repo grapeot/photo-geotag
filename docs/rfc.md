@@ -80,6 +80,7 @@ The iOS app acts as the receiver and conduit for the watch app.
   - `UIActivityViewController` (Share Sheet) for direct AirDrop to a Mac.
   - Direct export to the iOS Files app or cloud drives.
 - **Health Route Import**: Reads workout routes the user already recorded in Apple Health (the system Workout app or another fitness app) and turns each into a GPX session, so a track is not lost when it was captured as a workout rather than by the watch app. This is the complement to §4.5: the watch recorder and the user's own workouts are alternative sources for the same outing. The importer reads **route geometry only** — it requests read access to workouts and routes, and never reads heart rate, active energy, or any other metric, and never writes to Health.
+- **Resume from the Phone**: When an outing is interrupted (§4.5), the iPhone can resume it without the user touching the watch. It calls `HKHealthStore.startWatchApp(with:)`, which launches or wakes the companion watch app and delivers a workout configuration to the watch delegate (`WKApplicationDelegate.handle(_:)`); the watch then resumes its open outing. Sessions carry a lifecycle state (`recording` / `interrupted`) so the list distinguishes an in-progress recording from an interrupted one.
 - **Appearance & Localization**: Full English and Chinese localization matching system preferences; responsive to light and dark system appearances.
 
 ### 3.3 CLI (`src/photo_geotag/`)
@@ -183,6 +184,9 @@ session. Instead:
 The corollary is a product decision, not a limitation: the watch recorder and a user's own workouts
 are complementary sources. When the user is already running a workout, its route is recorded by
 that app into Health, and the iOS app can read it back (see §3.2) rather than the two competing.
+Resume is manual and available from both ends: the watch shows Resume / Discard, and the iPhone can
+request a resume over `startWatchApp` (§3.2). Automatic resume when the slot frees is deliberately
+not implemented, because the app cannot run in the background once it loses its session.
 
 ---
 
