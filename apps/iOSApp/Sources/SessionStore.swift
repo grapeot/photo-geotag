@@ -117,9 +117,11 @@ final class SessionStore: ObservableObject {
         tracks[session.id]
     }
 
-    /// Unions the tracks of the given sessions into one GPX file, split into
-    /// `<trkseg>` runs at large time gaps, and returns its temporary URL.
-    func exportMergedGPX(for sessions: [StoredSession]) -> URL? {
+    /// Builds a GPX file for the given sessions (one or many), splitting the
+    /// output into `<trkseg>` runs wherever consecutive points are farther apart
+    /// than the merge tolerance, and returns its temporary URL. Always applied,
+    /// so a single session and a union are rendered the same way.
+    func exportGPX(for sessions: [StoredSession]) -> URL? {
         let selectedTracks = sessions.compactMap { tracks[$0.id] }
         let points = TrackUnion.merge(selectedTracks)
         guard !points.isEmpty else { return nil }

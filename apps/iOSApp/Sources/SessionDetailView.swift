@@ -40,7 +40,9 @@ struct SessionDetailView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
-                    shareItem = ShareItem(url: session.fileURL)
+                    if let url = store.exportGPX(for: [session]) {
+                        shareItem = ShareItem(url: url)
+                    }
                 } label: {
                     Label("Export GPX", systemImage: "square.and.arrow.up")
                 }

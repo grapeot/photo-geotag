@@ -79,6 +79,9 @@ The iOS app acts as the receiver and conduit for the watch app.
 - **Export Pipeline**: Exposes standard iOS export interfaces:
   - `UIActivityViewController` (Share Sheet) for direct AirDrop to a Mac.
   - Direct export to the iOS Files app or cloud drives.
+  - Every export is re-serialized through the segmenter (new `<trkseg>` wherever consecutive points
+    are more than the `merge` matching tolerance — 300 s — apart), so a single session and a union
+    are rendered identically and a gap never becomes a straight connecting line.
 - **Health Route Import**: Reads workout routes the user already recorded in Apple Health (the system Workout app or another fitness app) and turns each into a GPX session, so a track is not lost when it was captured as a workout rather than by the watch app. This is the complement to §4.5: the watch recorder and the user's own workouts are alternative sources for the same outing. The importer reads **route geometry only** — it requests read access to workouts and routes, and never reads heart rate, active energy, or any other metric, and never writes to Health.
 - **Resume from the Phone**: When an outing is interrupted (§4.5), the iPhone can resume it without the user touching the watch. It calls `HKHealthStore.startWatchApp(with:)`, which launches or wakes the companion watch app and delivers a workout configuration to the watch delegate (`WKApplicationDelegate.handle(_:)`); the watch then resumes its open outing. Sessions carry a lifecycle state (`recording` / `interrupted`) so the list distinguishes an in-progress recording from an interrupted one.
 - **Appearance & Localization**: Full English and Chinese localization matching system preferences; responsive to light and dark system appearances.

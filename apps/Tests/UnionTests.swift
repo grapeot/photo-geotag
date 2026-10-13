@@ -29,6 +29,14 @@ final class TrackUnionTests: XCTestCase {
         XCTAssertEqual(GPXWriter.segments(from: points, maxGap: nil).count, 1)
     }
 
+    func testDefaultSegmentGapMatchesMergeTolerance() {
+        XCTAssertEqual(TrackUnion.defaultSegmentGap, 300, accuracy: 0.001)
+        let justUnder = [point(0), point(299)]
+        let justOver = [point(0), point(301)]
+        XCTAssertEqual(GPXWriter.segments(from: justUnder, maxGap: TrackUnion.defaultSegmentGap).count, 1)
+        XCTAssertEqual(GPXWriter.segments(from: justOver, maxGap: TrackUnion.defaultSegmentGap).count, 2)
+    }
+
     func testSegmentedDocumentRoundTripsAllPoints() {
         let points = [point(0), point(10), point(3600), point(3610)]
         let document = GPXWriter.document(name: "Photo Track", points: points, segmentGap: 1800)

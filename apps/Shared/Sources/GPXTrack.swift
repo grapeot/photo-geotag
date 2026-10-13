@@ -159,8 +159,10 @@ enum GPXWriter {
 /// source (the watch recorder and Health workouts) exports as a single GPX.
 enum TrackUnion {
     /// A new `<trkseg>` starts when consecutive points are more than this far
-    /// apart in time (30 minutes).
-    static let defaultSegmentGap: TimeInterval = 1800
+    /// apart in time. Aligned with the CLI `merge` matching tolerance (300 s):
+    /// wherever a photo could not be matched, the route is not drawn as a
+    /// connecting line either.
+    static let defaultSegmentGap: TimeInterval = 300
 
     /// Concatenates the points of every track and orders them by time.
     static func merge(_ tracks: [GPXTrack]) -> [TrackPoint] {
