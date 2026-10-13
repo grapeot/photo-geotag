@@ -81,6 +81,19 @@ final class SessionStore: ObservableObject {
         reload()
     }
 
+    /// Writes GPS routes imported from Apple Health as finalized sessions. Ids are
+    /// derived from the workout UUID, so re-importing updates in place.
+    func importHealthRoutes(_ routes: [ImportedRoute]) {
+        guard !routes.isEmpty else { return }
+        for route in routes {
+            let destination = directory.appendingPathComponent("\(route.id).gpx")
+            let document = GPXWriter.document(name: route.track.name, points: route.track.points)
+            guard (try? Data(document.utf8).write(to: destination)) != nil else { continue }
+            saveMetadata(SessionMetadata(isFinal: true, source: .health), id: route.id)
+        }
+        reload()
+    }
+
     func track(for session: StoredSession) -> GPXTrack? {
         GPXParser.parse(contentsOf: session.fileURL)
     }

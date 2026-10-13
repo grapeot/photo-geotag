@@ -54,6 +54,14 @@
   progress" badge. `WatchTransferKey` and a `watchTransferBool` decoder were added to Shared.
   Verified: iOS tests 9 passed, watch scheme BUILD SUCCEEDED.
 
+- 2026-10-13: Added Health route import on iOS. `HealthRouteImporter` reads `HKWorkoutRoute`
+  geometry (via `HKAnchoredObjectQuery` + `HKWorkoutRouteQuery`) for workouts since a lookback
+  window and writes each as a `source: health` GPX session; an "Import from Health" toolbar action
+  drives authorization + import. The iOS target gained the HealthKit entitlement and
+  `NSHealthShareUsageDescription` (read-only; no health metrics). Rationale in `docs/rfc.md` §3.2
+  and §5.2; `FR-I6` added to `docs/prd.md`. Verified: iOS tests 9 passed, watch scheme BUILD
+  SUCCEEDED.
+
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and
