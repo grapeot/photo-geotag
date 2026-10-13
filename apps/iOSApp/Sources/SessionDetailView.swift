@@ -8,6 +8,7 @@ struct SessionDetailView: View {
     @State private var shareItem: ShareItem?
     @State private var launcher = WatchWorkoutLauncher()
     @State private var resumeMessage: String?
+    @State private var showResumeConfirmation = false
 
     private var canResumeOnWatch: Bool { !session.isFinal && session.isInterrupted }
 
@@ -57,9 +58,7 @@ struct SessionDetailView: View {
             if canResumeOnWatch {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        launcher.resumeOnWatch { success in
-                            resumeMessage = success ? "Resume Requested" : "Could Not Reach Watch"
-                        }
+                        showResumeConfirmation = true
                     } label: {
                         Label("Resume on Apple Watch", systemImage: "arrow.clockwise")
                     }
@@ -69,8 +68,20 @@ struct SessionDetailView: View {
         .sheet(item: $shareItem) { item in
             ShareSheet(activityItems: [item.url])
         }
+        .alert("Resume Anyway?", isPresented: $showResumeConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Continue") { resumeOnWatch() }
+        } message: {
+            Text("Another workout may be running. Resuming will end it.")
+        }
         .alert(LocalizedStringKey(resumeMessage ?? ""), isPresented: isShowingResumeMessage) {
             Button("OK", role: .cancel) {}
+        }
+    }
+
+    private func resumeOnWatch() {
+        launcher.resumeOnWatch { success in
+            resumeMessage = success ? "Resume Requested" : "Could Not Reach Watch"
         }
     }
 

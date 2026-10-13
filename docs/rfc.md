@@ -189,7 +189,11 @@ are complementary sources. When the user is already running a workout, its route
 that app into Health, and the iOS app can read it back (see §3.2) rather than the two competing.
 Resume is manual and available from both ends: the watch shows Resume / Discard, and the iPhone can
 request a resume over `startWatchApp` (§3.2). Automatic resume when the slot frees is deliberately
-not implemented, because the app cannot run in the background once it loses its session.
+not implemented, because the app cannot run in the background once it loses its session. Starting a
+session ends any other running workout (watchOS lets the second session win), and HealthKit exposes
+no API to detect or name the other session, so the watch Resume and the phone Resume both confirm
+first ("Another workout may be running. Resuming will end it.") and the watch Start screen carries a
+static notice.
 
 ---
 

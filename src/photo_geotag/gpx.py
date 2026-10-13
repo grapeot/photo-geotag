@@ -26,7 +26,7 @@ def _parse_iso_utc(text: str) -> datetime:
     return dt.astimezone(UTC)
 
 
-def _point_from_element(el: ET.Element) -> "TrackPoint | None":
+def _point_from_element(el: ET.Element) -> TrackPoint | None:
     lat = el.get("lat")
     lon = el.get("lon")
     if lat is None or lon is None:
