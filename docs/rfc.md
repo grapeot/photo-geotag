@@ -68,7 +68,7 @@ The watch app is an embedded target hosted within the iOS companion application.
   - **Critical Guarantee**: By ending the session without finalizing and saving a workout, zero workout records, zero heart rate readings, and zero calorie logs are registered in Apple Health or Fitness.
 - **Data Persistence**: Track points are written incrementally as serialized XML snippets. If the watch runs out of battery mid-session, all points up to the last flush are preserved.
 - **Incremental Snapshots**: Every five minutes while recording, the recorder re-serializes the in-progress track into a complete GPX document and transfers it to the iPhone with `final = false`. The snapshots share one session id, so the phone keeps the latest. This gives the user a progressively built route to eyeball for plausibility, and preserves partial data if the watch dies before Stop. The finalized track is sent once more with `final = true`. Snapshots are cumulative (each carries the whole track so far); a delta encoding is a deliberate non-goal for now.
-- **User Interface**: Minimalist single-button interface (Start/Stop). Automatically adheres to system light/dark mode and delivers localized strings in English and Chinese.
+- **User Interface**: A single control that reads Start / Stop, plus Resume / Discard choices when an outing was interrupted. Automatically adheres to system light/dark mode and delivers localized strings in English and Chinese.
 
 ### 3.2 iPhone App (`iOS`)
 
@@ -167,14 +167,18 @@ session it cannot restart itself.
 Because the capture is a convenience (a GPS track), not a workout, the app does not compete for the
 session. Instead:
 
-- **Preemption is handled explicitly.** The recorder treats `errorAnotherWorkoutSessionStarted` and
-  a transition to `.ended` as an abnormal stop: it finalizes the partial track, transfers it to the
-  iPhone, returns to idle, and surfaces "Stopped: another workout started" rather than leaving a
-  stale "Recording" state on screen.
-- **Orphaned recordings are recovered.** If the app is terminated mid-session (preemption, crash, or
-  power loss), the streamed `current_session.gpx.part` is left on disk. On the next launch the
-  recorder rescues its points, writes a complete GPX, and transfers it, so a session that never
-  stopped cleanly is not lost.
+- **Preemption keeps the outing open.** The recorder treats `errorAnotherWorkoutSessionStarted` and
+  a transition to `.ended` as an interruption, not a stop: it keeps the partial file, moves to an
+  `interrupted` state, plays a haptic so the user notices, and tells the phone the outing is
+  interrupted. The user can then Resume (continuing the same session, so one outing stays one
+  track) or Discard; a stop finalizes the track.
+- **Starting while another workout runs is refused.** The recorder waits for the session to reach
+  `.running` before it commits to recording (opening the file, changing state). If another workout
+  holds the session, the start fails and the app reports it, instead of briefly pretending to
+  record or transferring an empty track.
+- **Crash recovery.** If the app is terminated mid-recording (a crash, not a preemption), the
+  streamed `active.gpx.part` is left on disk; on the next launch the recorder rescues its points,
+  writes a complete GPX, and transfers it.
 
 The corollary is a product decision, not a limitation: the watch recorder and a user's own workouts
 are complementary sources. When the user is already running a workout, its route is recorded by

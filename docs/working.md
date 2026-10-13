@@ -71,6 +71,16 @@
   contract in `docs/interface.md` §4-§5 and added a capture-source acceptance criterion to the
   skill. Verified: iOS tests 13 passed, watch scheme BUILD SUCCEEDED.
 
+- 2026-10-13: Reworked the watch recorder around an explicit interruption lifecycle. States are
+  now `idle` / `recording` / `interrupted`; a preemption keeps the partial file (renamed
+  `interrupted_<id>.gpx.part`), moves to `interrupted`, plays a haptic, and notifies the phone,
+  instead of closing the outing. Resume continues the same session and file (writing a `<trkseg>`
+  break so the resumed run is a new segment, i.e. one track per outing); Discard finalizes it.
+  Start/resume now wait for the session to reach `.running` before committing, so starting while
+  another workout holds the session is refused with an alert rather than a phantom recording or an
+  empty transfer; this also removes a latent path that left `.recording` set with no session.
+  Verified: iOS tests 14 passed, watch scheme BUILD SUCCEEDED.
+
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and
