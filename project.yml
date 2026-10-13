@@ -88,6 +88,17 @@ targets:
           destination: productsDirectory
           subpath: "$(CONTENTS_FOLDER_PATH)/Watch"
 
+  PhotoGeotagTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: apps/Tests
+      - path: apps/Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.photogeotag.tests
+        GENERATE_INFOPLIST_FILE: YES
+
 schemes:
   PhotoGeotag:
     build:
@@ -95,6 +106,10 @@ schemes:
         PhotoGeotag: all
     run:
       config: Debug
+    test:
+      config: Debug
+      targets:
+        - PhotoGeotagTests
   PhotoGeotagWatch:
     build:
       targets:

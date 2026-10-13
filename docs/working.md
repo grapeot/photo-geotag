@@ -34,6 +34,18 @@
   runs on the Apple Watch rather than the iPhone), with evidence for the iPhone reliability and
   battery downsides. Noted that indoor GPS gaps are inherent to GPS, not a cost of this design.
 
+- 2026-10-13: Hardened the watch recorder against session preemption. watchOS runs one workout
+  session at a time; when another workout starts, WatchKit ends ours with
+  `errorAnotherWorkoutSessionStarted`. `WatchRecorder` now finalizes and transfers the partial
+  track, returns to idle, and reports "Stopped: another workout started" instead of leaving a
+  stale recording state. Added launch-time recovery of an orphaned `current_session.gpx.part`
+  (previously destroyed on the next Start), and a queued transfer path in
+  `WatchSessionTransmitter` so a recovery transfer fired before `WCSession` activation is not
+  dropped. Added the `PhotoGeotagTests` unit-test target (GPX round-trip, timestamp parsing,
+  partial-file recovery) and wired it into the `PhotoGeotag` scheme. Documented the limitation and
+  recovery in `docs/rfc.md` §4.5. Verified: iOS tests 6 passed, watch scheme BUILD SUCCEEDED,
+  CLI `pytest` 53 passed.
+
 ## Lessons Learned
 
 - The capture layer (watch/iOS) uses `HKWorkoutSession` only for background runtime and

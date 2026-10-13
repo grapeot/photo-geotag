@@ -151,6 +151,32 @@ src/photo_geotag/
 
 > Note: a track can contain gaps for time spent indoors without a GPS fix. This is inherent to GPS on any device — an iPhone logger has the same gap — and is not a cost specific to recording on the watch.
 
+### 4.5 One Workout Session at a Time, and Preemption
+
+watchOS runs a single workout session at a time. If a second workout starts while the photo track is
+recording — the system Workout app, or any third-party fitness app — WatchKit ends this app's
+session and delivers `HKError.Code.errorAnotherWorkoutSessionStarted` to the session delegate, and
+the session stops (Apple, [`HKWorkoutSession`](https://developer.apple.com/documentation/healthkit/hkworkoutsession)).
+This is an OS-level constraint, not a defect in this app, and it cannot be worked around: two apps
+cannot hold workout sessions simultaneously, and while the app is suspended after losing its
+session it cannot restart itself.
+
+Because the capture is a convenience (a GPS track), not a workout, the app does not compete for the
+session. Instead:
+
+- **Preemption is handled explicitly.** The recorder treats `errorAnotherWorkoutSessionStarted` and
+  a transition to `.ended` as an abnormal stop: it finalizes the partial track, transfers it to the
+  iPhone, returns to idle, and surfaces "Stopped: another workout started" rather than leaving a
+  stale "Recording" state on screen.
+- **Orphaned recordings are recovered.** If the app is terminated mid-session (preemption, crash, or
+  power loss), the streamed `current_session.gpx.part` is left on disk. On the next launch the
+  recorder rescues its points, writes a complete GPX, and transfers it, so a session that never
+  stopped cleanly is not lost.
+
+The corollary is a product decision, not a limitation: the watch recorder and a user's own workouts
+are complementary sources. When the user is already running a workout, its route is recorded by
+that app into Health, and the iOS app can read it back (see §3.2) rather than the two competing.
+
 ---
 
 ## 5. Boundaries and Non-Goals

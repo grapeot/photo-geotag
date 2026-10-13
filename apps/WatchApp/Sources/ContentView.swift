@@ -46,6 +46,9 @@ struct ContentView: View {
             }
         }
         .padding(.horizontal)
+        .onAppear {
+            recorder.recoverOrphanedRecordingIfNeeded()
+        }
     }
 
     private func toggleRecording() {
